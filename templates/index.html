@@ -21,12 +21,12 @@
         body {
             padding-top: 20px;
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+            background-color: #2E4057;
             color: #fff;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: auto;
             background-color: #ffffff33;
             padding: 20px;
@@ -35,9 +35,16 @@
         }
 
         h1 {
-            font-weight: 600;
+            font-weight: bold;
+            font-size: 28px;
             color: #fff;
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 22px;
+            color: #fdfdfd;
         }
 
         label {
@@ -62,15 +69,15 @@
         }
 
         .btn-primary {
-            background-color: #f093fb;
-            border-color: #f093fb;
+            background-color: #1ABC9C;
+            border-color: #1ABC9C;
             font-weight: 600;
-            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.5);
+            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.5);
         }
 
         .btn-primary:hover {
-            background-color: #f5576c;
-            border-color: #f5576c;
+            background-color: #16A085;
+            border-color: #16A085;
         }
 
         .slick-slide {
@@ -100,45 +107,78 @@
         .slick-next:before {
             color: #fff;
         }
+
+        .left-info {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #fdfdfd;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        ul li {
+            list-style-type: disc;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="text-center">Bulk Image Processing</h1>
-        <form id="imageForm" action="/process" method="POST" enctype="multipart/form-data">
-            <div class="form-section">
-                <label for="images" class="form-label">Upload Images</label>
-                <input class="form-control" type="file" name="images" id="images" multiple required>
+        <div class="row">
+            <!-- Left Column: Information about the site -->
+            <div class="col-md-6 left-info">
+                <h2>About Bulk Image Processing</h2>
+                <p>This web application allows users to upload multiple images at once and apply various processing tasks to them, such as:</p>
+                <ul>
+                    <li><strong>Remove Background</strong>: Automatically removes the background from uploaded images.</li>
+                    <li><strong>Resize Images</strong>: Resize images to specific dimensions as per your requirement.</li>
+                    <li><strong>Apply Branding</strong>: Overlay your brand's logo onto the images.</li>
+                    <li><strong>Convert to SVG</strong>: Convert your images into scalable vector graphics (SVG).</li>
+                </ul>
+                <p>Once you've uploaded your images and selected a task, simply submit the form to process them. The processed images will be available for download once completed.</p>
+                <p>Our system leverages powerful image processing libraries to ensure high-quality results for your business or personal needs.</p>
             </div>
 
-            <div class="form-section">
-                <label for="task" class="form-label">Select Task</label>
-                <select class="form-select" name="task" id="task" required>
-                    <option value="remove_background">Remove Background</option>
-                    <option value="resize">Resize Images</option>
-                    <option value="apply_branding">Apply Branding</option>
-                    <option value="convert_to_svg">Convert to SVG</option>
-                </select>
+            <!-- Right Column: Form for Image Upload and Task Selection -->
+            <div class="col-md-6">
+                <h1 class="text-center">Bulk Image Processing</h1>
+                <form id="imageForm" action="/process" method="POST" enctype="multipart/form-data">
+                    <div class="form-section">
+                        <label for="images" class="form-label">Upload Images</label>
+                        <input class="form-control" type="file" name="images" id="images" multiple required>
+                    </div>
+
+                    <div class="form-section">
+                        <label for="task" class="form-label">Select Task</label>
+                        <select class="form-select" name="task" id="task" required>
+                            <option value="remove_background">Remove Background</option>
+                            <option value="resize">Resize Images</option>
+                            <option value="apply_branding">Apply Branding</option>
+                            <option value="convert_to_svg">Convert to SVG</option>
+                        </select>
+                    </div>
+
+                    <!-- Resize Inputs -->
+                    <div id="resizeOptions" class="form-section d-none">
+                        <label for="width" class="form-label">Width</label>
+                        <input type="number" class="form-control" name="width" id="width" placeholder="Width (in pixels)">
+
+                        <label for="height" class="form-label mt-2">Height</label>
+                        <input type="number" class="form-control" name="height" id="height" placeholder="Height (in pixels)">
+                    </div>
+
+                    <!-- Branding Input -->
+                    <div id="brandingOptions" class="form-section d-none">
+                        <label for="branding_image" class="form-label">Upload Branding Image (Logo)</label>
+                        <input class="form-control" type="file" name="branding_image" id="branding_image">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Process Images</button>
+                </form>
             </div>
-
-            <!-- Resize Inputs -->
-            <div id="resizeOptions" class="form-section d-none">
-                <label for="width" class="form-label">Width</label>
-                <input type="number" class="form-control" name="width" id="width" placeholder="Width (in pixels)">
-
-                <label for="height" class="form-label mt-2">Height</label>
-                <input type="number" class="form-control" name="height" id="height" placeholder="Height (in pixels)">
-            </div>
-
-            <!-- Branding Input -->
-            <div id="brandingOptions" class="form-section d-none">
-                <label for="branding_image" class="form-label">Upload Branding Image (Logo)</label>
-                <input class="form-control" type="file" name="branding_image" id="branding_image">
-            </div>
-
-            <button type="submit" class="btn btn-primary mt-3">Process Images</button>
-        </form>
+        </div>
 
         <!-- Image Preview Section -->
         <div class="form-section">

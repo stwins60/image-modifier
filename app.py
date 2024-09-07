@@ -103,7 +103,7 @@ def process_images():
     try:
         files = request.files.getlist('images')
         task = request.form['task']
-        
+
         # Default values for width and height if task is resize and fields are left empty
         width = request.form.get('width', '').strip()  # Extract the width value
         height = request.form.get('height', '').strip()  # Extract the height value
@@ -119,7 +119,14 @@ def process_images():
         branding_file = request.files.get('branding_image')
 
         processed_images = []
+        valid_image_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
+
         for file in files:
+            # Check if file is a valid image by extension
+            if not file.filename.split('.')[-1].lower() in valid_image_extensions:
+                error_message = f"File {file.filename} is not a valid image. Please upload valid image files only."
+                return render_template('index.html', error=error_message)
+
             image = Image.open(file)
 
             if task == 'resize' and width and height:
@@ -157,7 +164,8 @@ def process_images():
 
     except Exception as e:
         sentry_sdk.capture_exception(e)
-        return jsonify({"error": str(e)})
+        return render_template('index.html', error=str(e))
+
 
 
 if __name__ == '__main__':
