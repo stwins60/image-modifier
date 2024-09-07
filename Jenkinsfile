@@ -15,7 +15,7 @@ pipeline {
         }
         stage("Git Checkout") {
             steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/stwins60/guessGame.git']])
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/stwins60/image-modifier.git']])
             }
         }
         stage("Install Dependencies") {
@@ -30,17 +30,14 @@ pipeline {
         stage("Trivy File Scan") {
             steps {
                 script {
-                    dir('./venv'){
+                    dir('./venv') {
                         def result = sh(script: "trivy filesystem --exit-code 1 --severity CRITICAL,HIGH .", returnStatus: true)
-
                         if (result != 0) {
-                            def trivy_output = sh(script: "trivy filesystem --exit-code 1 --severity CRITICAL,HIGH .", returnStatus: true)
-                            slackSend channel: "$SLACK_CHANNEL", message: "Trivy found vulnerabilities in the site packages: \n${trivy_output}"
+                            slackSend channel: "$SLACK_CHANNEL", message: "Trivy found vulnerabilities in the site packages."
                         } else {
                             slackSend channel: "$SLACK_CHANNEL", message: "Trivy passed with no vulnerabilities."
                         }
                     }
-                    
                 }
             }
         }
@@ -65,11 +62,10 @@ pipeline {
                     sh "chmod +x install-scout.sh"
                     sh "./install-scout.sh"
 
-                    def scanOutput = sh(script: "docker scout cves $IMAGE_NAME --exit-code --only-severity critical,high", returnStatus: true)
-                    def result = sh(script: "docker scout cves $IMAGE_NAME --exit-code --only-severity critical,high", returnStatus: true)
+                    def scanOutput = sh(script: "docker scout cves $IMAGE_NAME --only-severity critical,high", returnStdout: true).trim()
+                    def result = sh(script: "docker scout cves $IMAGE_NAME --only-severity critical,high --exit-code", returnStatus: true)
 
-                    if (result != 0){
-                        
+                    if (result != 0) {
                         slackSend(channel: "$SLACK_CHANNEL", message: "Docker Scout found vulnerabilities:\n${scanOutput}")
                     } else {
                         slackSend(channel: "$SLACK_CHANNEL", message: "Docker Scout scan passed with no vulnerabilities.")
@@ -88,7 +84,7 @@ pipeline {
             steps {
                 script {
                     dir('./k8s') {
-                        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: '', contextName: '', credentialsId: '88a9f11c-11e5-4bdb-b3bd-f63dba417648', namespace: '', serverUrl: '']]) {
+                        withKubeConfig([credentialsId: '88a9f11c-11e5-4bdb-b3bd-f63dba417648']) {
                             sh "sed -i 's|IMAGE_NAME|$IMAGE_NAME|g' deploy.yaml"
                             sh "kubectl apply -f ."
                             echo "Deployed.. Check the namespace"
