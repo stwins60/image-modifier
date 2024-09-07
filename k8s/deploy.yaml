@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-modifier-deployment
+  namespace: image-modifier
+spec:
+  selector:
+    matchLabels:
+      app: image-modifier
+  template:
+    metadata:
+      labels:
+        app: image-modifier
+    spec:
+      containers:
+      - name: image-modifier
+        image: IMAGE_NAME
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8501

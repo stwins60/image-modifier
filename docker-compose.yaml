@@ -1,0 +1,19 @@
+services:
+  image-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8504:8501"
+      - "8011:8012"
+    volumes:
+      - image-app:/app
+      - .:/app
+    networks:
+      - cloudflared-lab-net
+
+volumes:
+  image-app:
+networks:
+  cloudflared-lab-net:
+    external: true
