@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = "idrisniyi94/image-modifier:v.0.0-${env.BUILD_NUMBER}-lite"
         DOCKERHUB_CREDENTIALS = credentials('f81abbea-2b04-4323-9b98-5964dfd2af75')
         SLACK_CHANNEL = "#jenkins"
-        SENTRY_AUTH_TOKEN = "ddc981349a0ae523878c738143409a6012132552d48e3823ed4b4019bfaa16b2"
+        SENTRY_AUTH_TOKEN = "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"
         SENTRY_ORG = "sentry"
         SENTRY_PROJECT = "image-modifier"
     }
