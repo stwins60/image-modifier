@@ -1,6 +1,11 @@
 streamlit
+Flask
+Flask-Cors
 pillow
 rembg
 prometheus_client
 svgwrite
 sentry-sdk
+aiohttp>=3.9.0
+sentry-sdk[flask]
+sentry-sdk[aiohttp]

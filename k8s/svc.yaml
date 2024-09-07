@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: image-modifier-service
-  namespace: lab-demo
+  namespace: image-modifier
 spec:
   selector:
     app: image-modifier
   ports:
-  - port: 8501
-    targetPort: 8501
+  - port: 5000
+    targetPort: 5000
     nodePort: 32005
   type: NodePort

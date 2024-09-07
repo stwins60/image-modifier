@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Image Processing</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Slick CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap">
+
+    <style>
+        body {
+            padding-top: 20px;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #ffffff33;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        label {
+            font-weight: 600;
+            color: #fdfdfd;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border: 1px solid #fff;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #666;
+        }
+
+        .btn-primary {
+            background-color: #f093fb;
+            border-color: #f093fb;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.5);
+        }
+
+        .btn-primary:hover {
+            background-color: #f5576c;
+            border-color: #f5576c;
+        }
+
+        .slick-slide {
+            transition: transform 0.5s ease-in-out;
+            border-radius: 8px;
+        }
+
+        .slick-slide:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h3 {
+            color: #fff;
+        }
+
+        .slick-prev:before,
+        .slick-next:before {
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Bulk Image Processing</h1>
+        <form id="imageForm" action="/process" method="POST" enctype="multipart/form-data">
+            <div class="form-section">
+                <label for="images" class="form-label">Upload Images</label>
+                <input class="form-control" type="file" name="images" id="images" multiple required>
+            </div>
+
+            <div class="form-section">
+                <label for="task" class="form-label">Select Task</label>
+                <select class="form-select" name="task" id="task" required>
+                    <option value="remove_background">Remove Background</option>
+                    <option value="resize">Resize Images</option>
+                    <option value="apply_branding">Apply Branding</option>
+                    <option value="convert_to_svg">Convert to SVG</option>
+                </select>
+            </div>
+
+            <!-- Resize Inputs -->
+            <div id="resizeOptions" class="form-section d-none">
+                <label for="width" class="form-label">Width</label>
+                <input type="number" class="form-control" name="width" id="width" placeholder="Width (in pixels)">
+
+                <label for="height" class="form-label mt-2">Height</label>
+                <input type="number" class="form-control" name="height" id="height" placeholder="Height (in pixels)">
+            </div>
+
+            <!-- Branding Input -->
+            <div id="brandingOptions" class="form-section d-none">
+                <label for="branding_image" class="form-label">Upload Branding Image (Logo)</label>
+                <input class="form-control" type="file" name="branding_image" id="branding_image">
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Process Images</button>
+        </form>
+
+        <!-- Image Preview Section -->
+        <div class="form-section">
+            <h3>Uploaded Image Previews</h3>
+            <div class="image-preview-slider">
+                <!-- Slick slider will populate here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery (necessary for Slick slider) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Slick JS -->
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+    <script>
+        document.getElementById('task').addEventListener('change', function () {
+            const task = this.value;
+            const resizeOptions = document.getElementById('resizeOptions');
+            const brandingOptions = document.getElementById('brandingOptions');
+
+            resizeOptions.classList.add('d-none');
+            brandingOptions.classList.add('d-none');
+
+            if (task === 'resize') {
+                resizeOptions.classList.remove('d-none');
+            } else if (task === 'apply_branding') {
+                brandingOptions.classList.remove('d-none');
+            }
+        });
+
+        // Handle image preview
+        const imageInput = document.getElementById('images');
+        const imagePreviewContainer = document.querySelector('.image-preview-slider');
+
+        imageInput.addEventListener('change', function () {
+            const files = Array.from(imageInput.files);
+            imagePreviewContainer.innerHTML = ''; // Clear previous images
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('preview-img');
+                    imagePreviewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Initialize Slick slider after images have been added
+            setTimeout(() => {
+                imagePreviewContainer.classList.remove('slick-initialized', 'slick-slider');
+                $(imagePreviewContainer).slick({
+                    infinite: true,
+                    slidesToShow: 3,
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 2000,
+                    arrows: true,
+                    dots: true,
+                });
+            }, 100); // Delay to allow images to load before initializing slick
+        });
+    </script>
+</body>
+
+</html>

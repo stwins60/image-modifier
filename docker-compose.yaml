@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8504:8501"
-      - "8011:8012"
+      - "5003:5000"
+      # - "8011:8012"
     volumes:
       - image-app:/app
       - .:/app

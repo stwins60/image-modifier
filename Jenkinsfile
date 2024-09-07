@@ -5,6 +5,9 @@ pipeline {
         IMAGE_NAME = "idrisniyi94/image-modifier:v.0.0-${env.BUILD_NUMBER}-lite"
         DOCKERHUB_CREDENTIALS = credentials('f81abbea-2b04-4323-9b98-5964dfd2af75')
         SLACK_CHANNEL = "#jenkins"
+        SENTRY_AUTH_TOKEN = "ddc981349a0ae523878c738143409a6012132552d48e3823ed4b4019bfaa16b2"
+        SENTRY_ORG = "sentry"
+        SENTRY_PROJECT = "image-modifier"
     }
 
     stages {
@@ -21,9 +24,11 @@ pipeline {
         stage("Install Dependencies") {
             steps {
                 script {
-                    sh "python3 -m venv venv"
-                    sh ". venv/bin/activate"
-                    sh "python3 -m pip install -r requirements.txt --no-cache-dir --break-system-packages"
+                    sh """
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    python3 -m pip install -r requirements.txt --no-cache-dir --break-system-packages
+                    """
                 }
             }
         }
@@ -58,10 +63,11 @@ pipeline {
         stage("Docker Scout") {
             steps {
                 script {
-                    sh "curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh"
-                    sh "chmod +x install-scout.sh"
-                    sh "./install-scout.sh"
-
+                    sh """
+                    curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+                    chmod +x install-scout.sh
+                    ./install-scout.sh
+                    """
                     def scanOutput = sh(script: "docker scout cves $IMAGE_NAME --only-severity critical,high", returnStdout: true).trim()
                     def result = sh(script: "docker scout cves $IMAGE_NAME --only-severity critical,high --exit-code", returnStatus: true)
 
@@ -90,6 +96,19 @@ pipeline {
                             echo "Deployed.. Check the namespace"
                         }
                     }
+                }
+            }
+        }
+        stage("Release to Sentry") {
+            steps {
+                script {
+                    sh """
+                    curl -sL https://sentry.io/get-cli/ | bash
+                    VERSION=\$(sentry-cli releases propose-version)
+                    sentry-cli releases new \$VERSION
+                    sentry-cli releases set-commits \$VERSION --auto
+                    sentry-cli releases finalize \$VERSION
+                    """
                 }
             }
         }

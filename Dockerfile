@@ -20,4 +20,5 @@ EXPOSE 8012
 
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
-ENTRYPOINT ["python3", "-m", "streamlit", "run", "app.py", "--server.enableCORS", "true", "--server.port=8501", "--server.address=0.0.0.0", "--browser.gatherUsageStats", "false"]
+# ENTRYPOINT ["python3", "-m", "streamlit", "run", "app.py", "--server.enableCORS", "true", "--server.port=8501", "--server.address=0.0.0.0", "--browser.gatherUsageStats", "false"]
+CMD python app.py

@@ -17,7 +17,10 @@ spec:
         image: IMAGE_NAME
         resources:
           limits:
-            memory: "128Mi"
-            cpu: "500m"
+            memory: "800Mi"  # Increase from 128Mi to 256Mi (or higher)
+            cpu: "2000m"
+          requests:
+            memory: "500Mi"  # Set request to the minimum required memory
+            cpu: "1000m"      # Ensure CPU request is reasonable
         ports:
-        - containerPort: 8501
+        - containerPort: 5000
